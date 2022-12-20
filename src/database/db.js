@@ -6,8 +6,8 @@ const { Pool } = pkg;
 
 export const connectionDB = new Pool({
     host: process.env.HOST,
-    port: 5432,
-    user: "postgres",
+    port: process.env.PORTDB,
+    user: process.env.USERDB,
     password: process.env.PASSWORD,
     database: process.env.DATABASE,
 });

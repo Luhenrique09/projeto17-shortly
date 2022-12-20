@@ -8,7 +8,11 @@ async function register(req, res) {
     const hashPassword = bcrypt.hashSync(password, 10);
 
     try {
-        const userExists = await connectionDB.query("SELECT email FROM users WHERE email=$1;",
+        if (password !== confirmPassword) {
+            return res.status(422).send("Senhas incompatíveis!")
+        }
+
+        const userExists = await connectionDB.query('SELECT email FROM users WHERE email=$1;',
             [email]
         );
 
@@ -17,7 +21,7 @@ async function register(req, res) {
         }
 
         await connectionDB.query(
-            "INSERT INTO users (name, email, password ) VALUES ($1, $2, $3)",
+            'INSERT INTO users (name, email, password ) VALUES ($1, $2, $3);',
             [name, email, hashPassword]
         );
 
@@ -34,21 +38,33 @@ async function login(req, res) {
     let token = uuidV4();
 
     try {
-        const userExists = await connectionDB.query("SELECT * FROM users WHERE email=$1;",
+        const userExists = await connectionDB.query('SELECT * FROM users WHERE email=$1;',
             [email]
         );
         if (!userExists.rows[0]) {
-            return res.status(401).send({ message: "Email não existem!" })
+            return res.status(401).send("Email não existem!")
         }
 
         const rightPassword = bcrypt.compareSync(password, userExists.rows[0].password);
         if (!rightPassword) {
-            return res.status(401).send({ message: "Senha incorreta!" })
+            return res.status(401).send("Senha incorreta!")
+        }
+       const idUser = userExists.rows[0].id.toString();
+        
+        await connectionDB.query(
+            'INSERT INTO sessions ( "userId", token ) VALUES ($1, $2);',
+            [idUser, token]
+        );
+
+        const userOn = {
+            name: userExists.rows[0].name,
+            token,
         }
 
-        res.send(token);
+        res.send(userOn);
 
     } catch (err) {
+        console.log(err)
         res.sendStatus(422);
     }
 };
