@@ -47,7 +47,32 @@ async function findById (req, res){
       };
 };
 
+async function findShortUrl (req, res){
+    const {shortUrl} = req.params;
+    
+    try {
+        const { rows } = await connectionDB.query(
+          'SELECT * FROM links WHERE "shortlyLink"=$1;',
+          [shortUrl]
+        );
+            
+        if (rows.length === 0) {
+          res.status(404).send("Esse link não existe!");
+        };
+        const amount = rows[0].amount+1;
+        
+        await connectionDB.query('UPDATE links SET amount=$1 WHERE "shortlyLink"=$2;', 
+        [amount, shortUrl]);
+     
+        res.status(200).send(rows[0].link);
+        
+      } catch (err) {
+        res.status(500).send(err.message);
+      };
+};
+
 export {
     create,
-    findById
+    findById,
+    findShortUrl
 };
