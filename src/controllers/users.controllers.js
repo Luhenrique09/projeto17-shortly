@@ -48,18 +48,19 @@ async function findUsers(req, res) {
     try {
         const name = await connectionDB.query('SELECT name FROM users WHERE id=$1',
          [idUserOn]);
-         
-        const visistCount = await connectionDB.query('SELECT SUM(amount) FROM links WHERE "userId"=$1;',
+
+        const visitCount = await connectionDB.query('SELECT SUM(amount) FROM links WHERE "userId"=$1;',
          [idUserOn]);
         
-        const userMe = await connectionDB.query('SELECT links.id AS "ulrId", links."shortlyLink", links.link, links.amount FROM links JOIN users ON links."userId" = users.id  WHERE links."userId" = $1', [idUserOn]); 
+        const userMe = await connectionDB.query('SELECT links.id AS "ulrId", links."shortlyLink", links.link AS url, links.amount AS "visitCount" FROM links JOIN users ON links."userId" = users.id  WHERE links."userId" = $1', [idUserOn]); 
         
         const userUrls = {
             id: idUserOn,
             name: name.rows[0].name,
-            visistCount: visistCount.rows[0].sum,
+            visitCount: visitCount.rows[0].sum,
             shortenedUrls: userMe.rows
         }
+
         res.send(userUrls);
 
     } catch (err) {
