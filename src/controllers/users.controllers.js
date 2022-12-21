@@ -21,8 +21,6 @@ async function register(req, res) {
 };
 
 async function login(req, res) {
-    const user = req.body;
-    const { email, password } = req.body;
     const token = uuidV4();
     const userExists = res.locals.userExists;
     const idUser = userExists.rows[0].id.toString();
