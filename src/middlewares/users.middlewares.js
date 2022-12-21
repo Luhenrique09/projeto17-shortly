@@ -22,7 +22,7 @@ export async function validSchemaUsersRegister(req, res, next){
         if (userExists.rows[0]) {
             return res.status(409).send({ message: "Esse email já existe" })
         }
-        res.locals.user = user;
+        
         next();
 };
 
@@ -38,6 +38,8 @@ export async function validSchemaUsersLogin(req, res, next){
         const userExists = await connectionDB.query('SELECT * FROM users WHERE email=$1;',
             [user.email]
         );
+
+
         if (!userExists.rows[0]) {
             return res.status(401).send("Email não existem!")
         }
@@ -47,7 +49,8 @@ export async function validSchemaUsersLogin(req, res, next){
             return res.status(401).send("Senha incorreta!")
         }
        
+        
 
-        res.locals.user = user;
+        res.locals.userExists = userExists;
         next();
 };
