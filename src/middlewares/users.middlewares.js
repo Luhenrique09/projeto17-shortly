@@ -49,8 +49,6 @@ export async function validSchemaUsersLogin(req, res, next){
             return res.status(401).send("Senha incorreta!")
         }
        
-        
-
         res.locals.userExists = userExists;
         next();
 };
