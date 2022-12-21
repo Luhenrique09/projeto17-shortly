@@ -57,7 +57,7 @@ async function findShortUrl(req, res) {
         );
 
         if (rows.length === 0) {
-            res.status(404).send("Esse link não existe!");
+            return res.status(404).send("Esse link não existe!");
         };
         const amount = rows[0].amount + 1;
 
