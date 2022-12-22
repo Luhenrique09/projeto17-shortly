@@ -9,4 +9,5 @@ router.post("/urls/shorten", auth, validSchemaUrls, create)
 router.get("/urls/:id", findById);
 router.get("/urls/open/:shortUrl", findShortUrl);
 router.delete("/urls/:id", auth, removeLink);
+
 export default router;
