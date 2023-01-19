@@ -52,7 +52,11 @@ async function findUsers(req, res) {
         const visitCount = await connectionDB.query('SELECT SUM(amount) FROM links WHERE "userId"=$1;',
          [idUserOn]);
         
-        const userMe = await connectionDB.query('SELECT links.id AS "ulrId", links."shortlyLink", links.link AS url, links.amount AS "visitCount" FROM links JOIN users ON links."userId" = users.id  WHERE links."userId" = $1;', [idUserOn]); 
+        const userMe = await connectionDB.query(
+            `SELECT links.id AS "ulrId",
+             links."shortlyLink", links.link AS url,
+              links.amount AS "visitCount" FROM links JOIN users ON links."userId" = users.id  WHERE links."userId" = $1;`,
+               [idUserOn]); 
         
         if(!userMe.rows){
             return res.status(404);
@@ -75,7 +79,11 @@ async function findUsers(req, res) {
 async function ranking(req, res){
   
     try {
-        const {rows} = await connectionDB.query('SELECT users.id, users.name, COUNT(links.link) AS "linkCount", COALESCE(SUM(links.amount),0) AS "visitCount" FROM users LEFT JOIN links ON links."userId" = users.id GROUP BY users.id ORDER BY "visitCount" DESC, "linkCount" DESC LIMIT 10;');
+        const {rows} = await connectionDB.query(`SELECT users.id, users.name,
+         COUNT(links.link) AS "linkCount",
+          COALESCE(SUM(links.amount),0) AS "visitCount" 
+          FROM users LEFT JOIN links ON links."userId" = users.id 
+          GROUP BY users.id ORDER BY "visitCount" DESC, "linkCount" DESC LIMIT 10;`);
        
         res.send(rows);
 
